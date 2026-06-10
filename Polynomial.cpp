@@ -103,7 +103,7 @@ void Polynomial::insertSorted(int coeff, int degree) {
 		return;
 	}
 
-	if (degree < tail->getDegree()) {
+	if (degree <= tail->getDegree()) {
 		tail->setNext(newNode);
 		tail = newNode;
 		return;
