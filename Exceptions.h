@@ -2,6 +2,7 @@
 #include <exception>
 #include <string>
 
+// базовый класс для исключений многочлена
 class PolynomialException : public std::exception {
 private:
     std::string m_error{};
@@ -14,6 +15,7 @@ public:
     const char* what() const noexcept override { return m_error.c_str(); }
 };
 
+// 1.Исключение: файл не найден
 class FileNotFoundException : public PolynomialException {
 public:
     FileNotFoundException(const std::string& filename)
@@ -22,6 +24,7 @@ public:
     }
 };
 
+// 2.Исключение: неверный формат многочлена
 class InvalidPolynomialException : public PolynomialException {
 public:
     InvalidPolynomialException(const std::string& details)
@@ -30,6 +33,7 @@ public:
     }
 };
 
+// 3.Исключение: файл пуст
 class EmptyFileException : public PolynomialException {
 public:
     EmptyFileException(const std::string& filename)
