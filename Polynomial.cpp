@@ -5,6 +5,7 @@
 #include "Polynomial_Header.h"
 #include "Exceptions.h"
 
+// конструктор копирования
 Polynomial::Polynomial(const Polynomial& other) : head(nullptr), tail(nullptr) {
 	Node* curr = other.head;
 	while (curr != nullptr) {
@@ -53,6 +54,7 @@ void Polynomial::pushBack(int coeff, int degree) {
 	}
 }
 
+// удаление слагаемого по заданной степени 
 void Polynomial::removeByDegree(int degree) {
 	if (isEmpty()) {
 		return;
@@ -84,19 +86,20 @@ void Polynomial::removeByDegree(int degree) {
 	delete curr;
 }
 
+// алгоритм упорядоченной вставки узла
 void Polynomial::insertSorted(int coeff, int degree) {
 	if (coeff == 0) {
 		return;
 	}
 
 	Node* newNode = new Node(coeff, degree);
-
+	
 	if (isEmpty()) {
 		head = newNode;
 		tail = newNode;
 		return;
 	}
-
+	
 	if (degree > head->getDegree()) {
 		newNode->setNext(head);
 		head = newNode;
@@ -124,60 +127,62 @@ void Polynomial::removeZeroTerms() {
 		return;
 	}
 
-	Node* current = head;
-	Node* previous = nullptr;
-
-	while (current != nullptr) {
-		if (current->getValue() == 0) {
-			Node* toDelete = current;
-			current = current->getNext();
+	Node* curr = head;
+	Node* prev = nullptr;
+	// последовательный обход для поиска и удаления узлов с нулевым значением
+	while (curr != nullptr) {
+		if (curr->getValue() == 0) {
+			Node* toDelete = curr;
+			curr = curr->getNext();
 
 			if (toDelete == head) {
-				head = current;
+				head = curr;
 				if (head == nullptr) {
 					tail = nullptr;
 				}
 			}
 			else {
-				previous->setNext(current);
+				prev->setNext(curr);
 				if (toDelete == tail) {
-					tail = previous;
+					tail = prev;
 				}
 			}
 			delete toDelete;
 		}
 		else {
-			previous = current;
-			current = current->getNext();
+			prev = curr;
+			curr = curr->getNext();
 		}
 	}
 }
 
+// приведения подобных слагаемых 
 void Polynomial::simplify() {
 	if (isEmpty()) {
 		return;
 	}
 
-	Node* current = head;
-
-	while (current != nullptr && current->getNext() != nullptr) {
-		Node* nextNode = current->getNext();
-
-		if (current->getDegree() == nextNode->getDegree()) {
-			current->setValue(current->getValue() + nextNode->getValue());
-			current->setNext(nextNode->getNext());
+	Node* curr = head;
+	// т.к. список отсортирован, равные степени идут подряд
+	while (curr != nullptr && curr->getNext() != nullptr) {
+		Node* nextNode = curr->getNext();
+		// если степени соседних узлов совпадают - «схлопываем» их
+		if (curr->getDegree() == nextNode->getDegree()) {
+			curr->setValue(curr->getValue() + nextNode->getValue());
+			curr->setNext(nextNode->getNext());
 			if (nextNode == tail) {
-				tail = current;
+				tail = curr;
 			}
 			delete nextNode;
 		}
 		else {
-			current = current->getNext();
+			curr = curr->getNext();
 		}
 	}
 	removeZeroTerms();
 }
 
+// посимвольный разбор строки
 void Polynomial::parseFromString(const std::string& str) {
 	clear();
 
@@ -253,18 +258,19 @@ void Polynomial::parseFromString(const std::string& str) {
 	}
 }
 
+// формирование результирующей строки 
 std::string Polynomial::toString() const {
 	if (isEmpty()) {
 		return "0";
 	}
 
 	std::string result = "";
-	Node* current = head;
+	Node* curr = head;
 	bool isFirst = true;
 
-	while (current != nullptr) {
-		int coeff = current->getValue();
-		int degree = current->getDegree();
+	while (curr != nullptr) {
+		int coeff = curr->getValue();
+		int degree = curr->getDegree();
 
 		if (coeff > 0) {
 			if (!isFirst) {
@@ -293,7 +299,7 @@ std::string Polynomial::toString() const {
 		}
 
 		isFirst = false;
-		current = current->getNext();
+		curr = curr->getNext();
 	}
 	return result;
 }
